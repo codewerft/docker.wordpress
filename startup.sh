@@ -8,6 +8,7 @@ if [ ! -f /var/www/wp-config.php ]; then
   [ -z "$MYSQL_DB_NAME" ] && echo "MYSQL_DB_NAME must be set to the name of the new WordPress database." && exit 1;
   [ -z "$MYSQL_DB_USER" ] && echo "MYSQL_DB_USER must be set to the name of the database user." && exit 1;
   [ -z "$MYSQL_DB_PASSWORD" ] && echo "MYSQL_DB_PASSWORD must be set to the name of the database user's password." && exit 1;
+  [ -z "$SITE_URL" ] && echo "SITE_URL must be set to the FQDN of the blog." && exit 1;
 
   # Download and Install WordPress
   #
@@ -33,6 +34,9 @@ if [ ! -f /var/www/wp-config.php ]; then
   /'LOGGED_IN_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/
   /'NONCE_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/" /var/www/wp-config-sample.php > /var/www/wp-config.php
 
+  # Set the blog URL
+  echo "define('WP_SITEURL', '$SITE_URL');" >> /var/www/wp-config.php
+
 else
 
   # Restarting a container with an existing installation.
@@ -42,6 +46,7 @@ else
   [ -n "$MYSQL_DB_NAME" ] && sed -i "s/.*DB_NAME.*/define('DB_NAME', '$MYSQL_DB_NAME');/" /var/www/wp-config.php
   [ -n "$MYSQL_DB_USER" ] && sed -i "s/.*DB_USER.*/define('DB_USER', '$MYSQL_DB_USER');/" /var/www/wp-config.php
   [ -n "$MYSQL_DB_PASSWORD" ] && sed -i "s/.*DB_PASSWORD.*/define('DB_PASSWORD', '$MYSQL_DB_PASSWORD');/" /var/www/wp-config.php
+  [ -n "$SITE_URL" ] && sed -i "s/.*SITE_URL.*/define('WP_SITEURL', '$SITE_URL');/" /var/www/wp-config.php
 
 fi
 
